@@ -6,16 +6,15 @@ __all__ = ['PartyIdentifier']
 
 
 CO_IDENTIFIERS = [
-    ('co_vat_1', '1 - No identification'),
-    ('co_vat_11', '11 - Birth Certificate'),
-    ('co_vat_12', '12 - Identity Card'),
-    ('co_vat_13', '13 - Citizenship Card'),
-    ('co_vat_21', '21 - Alien Registration Card'),
-    ('co_vat_22', '22 - Foreigner ID'),
-    ('co_vat_31', '31 - TAX Number (NIT)'),
-    ('co_vat_41', '41 - Passport'),
-    ('co_vat_42', '42 - Foreign Identification Document'),
-    ('co_vat_43', '43 - No Foreign Identification')
+    ('co_vat_1', 'No identification'),
+    ('co_vat_11', 'Birth Certificate'),
+    ('co_vat_12', 'Identity Card'),
+    ('co_vat_13', 'Citizenship Card'),
+    ('co_vat_22', 'Foreigner ID'),
+    ('co_vat_31', 'TAX Number (NIT)'),
+    ('co_vat_41', 'Passport'),
+    ('co_vat_42', 'Foreign Identification Document'),
+    ('co_vat_43', 'No Foreign Identification')
 ]
 
 class PartyIdentifier(ModelSQL, ModelView):
@@ -37,12 +36,10 @@ class PartyIdentifier(ModelSQL, ModelView):
     def check_code(self):
         super(PartyIdentifier, self).check_code()
         if self.type == 'co_vat_31':
+            #generalizar multiples paises
+            #puede ser por el country del party de la company actual
             if not stdnum.co.nit.is_valid(self.code):
-                if self.party and self.party.id > 0:
-                    party = self.party.rec_name
-                else:
-                    party = ''
                     self.raise_user_error('invalid_vat', {
                         'code': self.code,
-                        'party': party,
+                        'party': self.party.rec_name,
                     })
